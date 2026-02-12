@@ -1,19 +1,28 @@
-/* 强制修正 Stack 主题左下角切换图标的显示逻辑 */
+/* 核弹级修复：强制修正左下角图标显示 */
+/* 使用通用匹配，不再依赖 html 标签，同时匹配 class 和 DOM 顺序 */
 
 /* 1. 默认/白天模式 (Light Mode) */
-/* 规则：隐藏 toggle-right (黑夜图标)，显示 toggle-left (白天图标) */
-html:not([data-scheme="dark"]) #dark-mode-toggle .icon-tabler-toggle-right {
-    display: none !important;
-}
-html:not([data-scheme="dark"]) #dark-mode-toggle .icon-tabler-toggle-left {
-    display: inline-block !important;
+/* 逻辑：当 data-scheme 不是 dark 时 */
+:root:not([data-scheme="dark"]) #dark-mode-toggle {
+    /* 强制显示第1个图标 (toggle-left/太阳) */
+    svg:nth-of-type(1), .icon-tabler-toggle-left {
+        display: inline-block !important;
+    }
+    /* 强制隐藏第2个图标 (toggle-right/月亮) */
+    svg:nth-of-type(2), .icon-tabler-toggle-right {
+        display: none !important;
+    }
 }
 
 /* 2. 黑夜模式 (Dark Mode) */
-/* 规则：隐藏 toggle-left (白天图标)，显示 toggle-right (黑夜图标) */
-html[data-scheme="dark"] #dark-mode-toggle .icon-tabler-toggle-left {
-    display: none !important;
-}
-html[data-scheme="dark"] #dark-mode-toggle .icon-tabler-toggle-right {
-    display: inline-block !important;
+/* 逻辑：当 data-scheme 是 dark 时 */
+:root[data-scheme="dark"] #dark-mode-toggle {
+    /* 强制隐藏第1个图标 (toggle-left/太阳) */
+    svg:nth-of-type(1), .icon-tabler-toggle-left {
+        display: none !important;
+    }
+    /* 强制显示第2个图标 (toggle-right/月亮) */
+    svg:nth-of-type(2), .icon-tabler-toggle-right {
+        display: inline-block !important;
+    }
 }
