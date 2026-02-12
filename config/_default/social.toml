@@ -1,0 +1,23 @@
+# GitHub 按钮
+[[social]]
+    identifier = "github"
+    name = "GitHub"
+    url = "https://github.com/Meze628"
+    [social.params]
+        icon = "github" 
+
+# 邮箱按钮
+[[social]]
+    identifier = "email"
+    name = "Email"
+    url = "zysmeze@gmail.com"
+    [social.params]
+        icon = "mail"
+
+# 如果想要 Bilibili (Stack 主题自带图标可能有限，通常用自定义 SVG，先试个基础的)
+#[[social]]
+#    identifier = "bilibili"
+#    name = "Bilibili"
+#    url = "https://space.bilibili.com/你的ID"
+#    [social.params]
+#        icon = "tv"

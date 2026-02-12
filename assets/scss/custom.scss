@@ -1,0 +1,9 @@
+/* 当处于白天模式时，隐藏右侧图标（假设它是你预想的黑夜图标） */
+html[data-scheme="light"] .theme-switch svg.icon-toggle-left {
+    display: none;
+}
+
+/* 当处于黑夜模式时，隐藏左侧图标（假设它是你预想的白天图标） */
+html[data-scheme="dark"] .theme-switch svg.icon-toggle-right {
+    display: none;
+}
