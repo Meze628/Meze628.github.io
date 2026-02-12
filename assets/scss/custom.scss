@@ -29,32 +29,43 @@
 
 /* --- 1. 代码块基础样式美化 --- */
 .highlight {
-    background-color: var(--pre-background-color); /* 跟随主题背景色 */
+    /* 核心 1：强制使用主题背景色，而不是 Dracula 的背景色 */
+    background-color: var(--pre-background-color) !important;
+    
     padding: var(--card-padding);
     position: relative;
     border-radius: 12px;
     box-shadow: var(--shadow-l1) !important;
     
-    /* 【核心修改】收缩宽度并居中 */
-    width: 96%;       /* 宽度设为 96%，这样左右就会留出空隙 */
-    margin: 20px auto; /* 上下20px间距，左右自动居中 */
+    /* 核心 2：使用 !important 强制让宽度和边距生效，抵抗主题默认的负边距 */
+    width: 96% !important; 
+    margin: 20px auto !important; 
     
-    /* 防止 padding 把盒子撑大 */
     box-sizing: border-box; 
+}
+
+/* --- 核心魔法：去除 Dracula 自带的深紫色背景 --- */
+/* 这会让代码文字保留 Dracula 配色，但背景变成透明，透出下面的 macOS 盒子颜色 */
+.highlight pre, 
+.highlight table, 
+.highlight td, 
+.highlight tr, 
+.highlight code {
+    background-color: transparent !important;
 }
 
 /* --- 2. macOS 风格红绿灯头部 --- */
 .article-content .highlight:before {
     content: '';
     display: block;
-    /* 指向刚才创建的 svg 图片 */
     background: url(/code-header.svg);
     background-repeat: no-repeat;
-    background-size: 46px; /* 调整圆点大小 */
-    background-position: 12px 10px; /* 调整位置 */
-    height: 32px; /* 头部高度 */
+    background-size: 46px; 
+    background-position: 12px 10px; 
+    height: 32px; 
     width: 100%;
-    border-bottom: 1px solid var(--body-background); /* 加一条底线更有质感 */
+    /* 给头部加个淡淡的分隔线，更有层次感 */
+    border-bottom: 1px solid var(--body-background); 
     margin-bottom: 10px;
 }
 
@@ -62,13 +73,17 @@
 .article-content .highlight pre {
     margin: 0;
     padding: 0;
+    /* 修复字体可能过大的问题 */
+    font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
 }
 
-/* 针对行号表格的微调，防止错位 */
+/* 针对行号表格的微调 */
 .chroma .lntable { 
     border-spacing: 0;
 }
 .chroma .lntd:first-child {
-    padding-right: 15px; /* 行号和代码的间距 */
-    user-select: none;   /* 依然保持行号不可选中 */
+    padding-right: 15px; 
+    user-select: none;
+    /* 让行号颜色稍微淡一点，不要抢了代码的风头 */
+    opacity: 0.7; 
 }
