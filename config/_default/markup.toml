@@ -23,6 +23,8 @@
     lineNos = true
     lineNumbersInTable = true
     
-    noClasses = false
+    noClasses = true
+    
+    style = "dracula"
     
     tabWidth = 4
