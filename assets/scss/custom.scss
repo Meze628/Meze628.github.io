@@ -27,52 +27,42 @@
     }
 }
 
-/* --- 优化代码块：Dracula 风格 & 禁止选中行号 --- */
-
-/* 针对 Hugo 生成的代码块表格 */
-.article-content .highlight > div.chroma {
-    /* 1. 圆角和阴影，让它看起来像 Mac 窗口 */
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    margin-bottom: 1.5rem;
-    
-    /* 确保背景色填满圆角 */
-    overflow: hidden; 
+/* --- 1. 代码块基础样式美化 --- */
+.highlight {
+    background-color: var(--pre-background-color);
+    padding: var(--card-padding);
+    position: relative;
+    border-radius: 12px; /* 圆角大一点 */
+    box-shadow: var(--shadow-l1) !important; 
+    margin: 20px 0;
 }
 
-/* 针对代码表格本身 */
-.chroma .lntable {
-    border-collapse: collapse;
-    width: 100%;
+/* --- 2. macOS 风格红绿灯头部 --- */
+.article-content .highlight:before {
+    content: '';
     display: block;
-    overflow-x: auto; /* 允许横向滚动 */
-}
-
-/* --- 核心魔法：行号不可选中 --- */
-.chroma .lntd:first-child {
-    /* 1. 禁止鼠标选中 (核心) */
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-
-    /* 2. 视觉优化：行号颜色淡一点，不抢戏 */
-    color: rgba(255, 255, 255, 0.4) !important; 
-    
-    /* 3. 分割线：在行号右边加一条淡淡的竖线 */
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
-    
-    /* 4. 间距调整 */
-    padding-right: 10px !important;
-    margin-right: 10px !important;
-    text-align: right;
-    width: 1%; /* 紧缩宽度 */
-    vertical-align: top; /* 顶部对齐 */
-}
-
-/* 代码内容区域 */
-.chroma .lntd:last-child {
-    padding-left: 15px !important;
-    vertical-align: top;
+    /* 指向刚才创建的 svg 图片 */
+    background: url(/code-header.svg);
+    background-repeat: no-repeat;
+    background-size: 46px; /* 调整圆点大小 */
+    background-position: 12px 10px; /* 调整位置 */
+    height: 32px; /* 头部高度 */
     width: 100%;
+    border-bottom: 1px solid var(--body-background); /* 加一条底线更有质感 */
+    margin-bottom: 10px;
+}
+
+/* --- 3. 细节调整 --- */
+.article-content .highlight pre {
+    margin: 0;
+    padding: 0;
+}
+
+/* 针对行号表格的微调，防止错位 */
+.chroma .lntable { 
+    border-spacing: 0;
+}
+.chroma .lntd:first-child {
+    padding-right: 15px; /* 行号和代码的间距 */
+    user-select: none;   /* 依然保持行号不可选中 */
 }

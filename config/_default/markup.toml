@@ -23,11 +23,6 @@
     lineNos = true
     lineNumbersInTable = true
     
-    # 【核心修改 1】开启内联样式 (noClasses = true)
-    # 只有设为 true，下面的 style 设置才会直接生效，否则 Hugo 会去读默认的 CSS 文件
-    noClasses = true
-    
-    # 【核心修改 2】指定皮肤为 Dracula
-    style = "dracula"
+    noClasses = false
     
     tabWidth = 4
