@@ -1,8 +1,8 @@
 /* ==========================================================================
-   自定义样式修复：macOS 风格 + Dracula 配色 + 横向滚动条
+   自定义样式修复：macOS 风格 + Dracula 高亮 + 自动横向滚动条
    ========================================================================== */
 
-/* 1. Stack 主题的 Toggle 图标显示逻辑 (保留这部分不动) */
+/* --- 1. 修复左下角主题切换图标 (保持不变) --- */
 :root:not([data-scheme="dark"]) #dark-mode-toggle {
     svg:nth-of-type(1), .icon-tabler-toggle-left { display: inline-block !important; }
     svg:nth-of-type(2), .icon-tabler-toggle-right { display: none !important; }
@@ -12,13 +12,12 @@
     svg:nth-of-type(2), .icon-tabler-toggle-right { display: inline-block !important; }
 }
 
-/* 2. 代码块最外层容器 (macOS 风格底板) */
+/* --- 2. 代码块容器 (macOS 风格底板) --- */
 .highlight {
     /* 【核心修复1】背景色 */
     /* 强制使用 Stack 主题定义的背景色（白天米白/晚上深灰），覆盖 Dracula 的紫色 */
     background-color: var(--pre-background-color) !important;
     
-    /* 容器外观 */
     padding: var(--card-padding);
     position: relative;
     border-radius: 12px;
@@ -28,13 +27,10 @@
     width: 96% !important; 
     margin: 20px auto !important; 
     box-sizing: border-box; 
-    
-    /* 确保内部元素不溢出圆角 */
-    overflow: hidden;
 }
 
-/* 3. 【关键】去除 Dracula 皮肤自带的深紫色背景 */
-/* Dracula 会给内部所有标签加背景色，我们必须全部设为透明，透出上面的 .highlight 背景 */
+/* --- 3. 【关键】去除 Dracula 皮肤自带的背景色 --- */
+/* Dracula 会给内部标签加深紫色背景，必须全部设为透明，让第2步设置的底色透出来 */
 .highlight div,
 .highlight pre, 
 .highlight table, 
@@ -46,12 +42,12 @@
     border: none !important;
 }
 
-/* 4. 【关键】横向滚动条修复 */
-/* 针对 Hugo 生成的表格结构 (.lntable) */
+/* --- 4. 【关键】横向滚动条修复 --- */
+/* 针对 Hugo 生成的代码行号表格结构 */
 .chroma .lntable {
-    display: block;       /* 表格默认不能滚动，必须改为 block */
+    display: block;       /* 表格默认不能滚动，必须强制改为 block */
     width: 100%;
-    overflow-x: auto;     /* 开启横向滚动 */
+    overflow-x: auto;     /* 开启横向自动滚动 */
     
     /* 滚动条美化 (Firefox) */
     scrollbar-width: thin; 
@@ -60,39 +56,41 @@
 
 /* 滚动条美化 (Chrome/Edge/Safari) */
 .chroma .lntable::-webkit-scrollbar {
-    height: 6px; /* 滚动条高度 */
+    height: 6px; /* 滚动条高度，细一点更精致 */
 }
 .chroma .lntable::-webkit-scrollbar-thumb {
-    background: rgba(136, 136, 136, 0.4);
+    background: rgba(136, 136, 136, 0.3); /* 滚动条颜色，半透明 */
     border-radius: 4px;
 }
 .chroma .lntable::-webkit-scrollbar-thumb:hover {
-    background: rgba(136, 136, 136, 0.7);
+    background: rgba(136, 136, 136, 0.6); /* 鼠标放上去变深 */
 }
 
-/* 5. macOS 红绿灯头部 */
+/* --- 5. macOS 红绿灯头部 --- */
 .article-content .highlight:before {
     content: '';
     display: block;
-    background: url(/code-header.svg); /* 确保 static 目录下有这个文件 */
+    /* 确保 static 目录下有这个 svg 文件 */
+    background: url(/code-header.svg); 
     background-repeat: no-repeat;
     background-size: 46px; 
     background-position: 12px 10px; 
     height: 32px; 
     width: 100%;
-    /* 头部底部分割线，增加层次感 */
+    /* 头部底部分割线 */
     border-bottom: 1px solid var(--body-background); 
     margin-bottom: 10px;
 }
 
-/* 6. 字体与间距微调 */
+/* --- 6. 字体与间距微调 --- */
 .article-content .highlight pre {
     margin: 0;
     padding: 0;
+    /* 推荐的编程字体栈 */
     font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
 }
 
-/* 行号单元格 */
+/* 行号单元格样式 */
 .chroma .lntd:first-child {
     padding-right: 15px; 
     user-select: none;   /* 禁止选中行号 */
@@ -102,7 +100,7 @@
     white-space: nowrap;
 }
 
-/* 代码内容单元格 */
+/* 代码内容单元格样式 */
 .chroma .lntd:last-child {
     vertical-align: top;
     width: 100%;
