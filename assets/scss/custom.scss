@@ -1,9 +1,19 @@
-/* 当处于白天模式时，隐藏右侧图标（假设它是你预想的黑夜图标） */
-html[data-scheme="light"] .theme-switch svg.icon-toggle-left {
-    display: none;
+/* 强制修正 Stack 主题左下角切换图标的显示逻辑 */
+
+/* 1. 默认/白天模式 (Light Mode) */
+/* 规则：隐藏 toggle-right (黑夜图标)，显示 toggle-left (白天图标) */
+html:not([data-scheme="dark"]) #dark-mode-toggle .icon-tabler-toggle-right {
+    display: none !important;
+}
+html:not([data-scheme="dark"]) #dark-mode-toggle .icon-tabler-toggle-left {
+    display: inline-block !important;
 }
 
-/* 当处于黑夜模式时，隐藏左侧图标（假设它是你预想的白天图标） */
-html[data-scheme="dark"] .theme-switch svg.icon-toggle-right {
-    display: none;
+/* 2. 黑夜模式 (Dark Mode) */
+/* 规则：隐藏 toggle-left (白天图标)，显示 toggle-right (黑夜图标) */
+html[data-scheme="dark"] #dark-mode-toggle .icon-tabler-toggle-left {
+    display: none !important;
+}
+html[data-scheme="dark"] #dark-mode-toggle .icon-tabler-toggle-right {
+    display: inline-block !important;
 }
