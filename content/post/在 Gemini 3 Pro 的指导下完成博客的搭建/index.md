@@ -17,7 +17,10 @@ tags:
 我的系统环境如下
 
 * **OS**: Windows 10/11 (本文演示环境)
-* **Git**: 已安装并配置好 SSH/HTTPS。
+* **Git**: 已安装并配置好了代理。
+    ```bash
+    git config http.proxy http://127.0.0.1:7893
+    ```
 * **Hugo**: 必须安装 **Extended** 版本（Stack 主题依赖 SCSS 编译，普通版会报错）。
     * 验证命令：`hugo version`
     * 输出示例：`hugo v0.155.0+extended windows/amd64`
@@ -118,12 +121,8 @@ Stack 主题的一大特点是**强依赖本地 SVG 图标**。如果在配置�
 3.  **重命名**：下载的文件（如 `brand-github.svg`）必须重命名为配置文件中 `icon` 字段对应的值（如 `github.svg`）。
 
 ### 4.2 修复夜间模式切换图标重叠
-为了个性化，我替换了默认的切换图标。但发现点击切换时，太阳和月亮图标同时显示。
-**原因**：主题 CSS 是根据默认类名控制显示隐藏的，自定义图标导致类名变化，样式失效。
-
-**解决方案**：
-创建 `assets/scss/custom.scss`，写入以下 CSS 强制覆盖默认逻辑：
-
+原先黑白主题切换图标使用的勾选条，我替换了太阳和月亮。在 [Tabler Icons](https://tabler.io/icons) 搜索即可。并将它们改名为与原图标名字一样的名字，分别是 toggle-left 和 toggle-right。    
+在 `assets/scss/custom.scss` 文件中加入以下内容
 ```scss
 /* 强制修正 Stack 主题左下角切换图标的显示逻辑 */
 /* 白天模式：显示第一个图标(日)，隐藏第二个(月) */
@@ -139,14 +138,98 @@ Stack 主题的一大特点是**强依赖本地 SVG 图标**。如果在配置�
 }
 ```
 
-## 5. 自动化部署 (GitHub Actions)
+## 5. 美化代码块（Code Block）
+在 `assets/scss/custom.scss` 文件中加入以下内容   
+```scss
+/* 2. 代码块外层容器 */
+.article-content .highlight {
+    /* 强制使用 Stack 主题的背景色 (覆盖 Dracula 的紫色) */
+    background-color: var(--pre-background-color) !important;
+    
+    /* 容器样式 */
+    border-radius: 12px;
+    box-shadow: var(--shadow-l1) !important;
+    margin: 20px auto !important;
+    width: 96% !important;
+    
+    /* 关键：为顶部的红绿灯留出 32px 的空间 */
+    padding-top: 32px !important;
+    position: relative;
+    overflow: hidden; /* 防止圆角溢出 */
+}
+
+/* 3. macOS 红绿灯头部 (绝对定位) */
+.article-content .highlight::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 32px;
+    
+    /* 图标与底部分割线 */
+    background: url(/code-header.svg) no-repeat 12px 10px;
+    background-size: 46px;
+    background-color: inherit; /* 跟随父元素背景 */
+    border-bottom: 1px solid var(--body-background);
+    z-index: 10;
+}
+
+/* 4. 代码滚动区域 (PRE 标签) */
+.article-content .highlight pre {
+    /* 核心：再次强制背景透明，确保万无一失 */
+    background-color: transparent !important;
+    background: transparent !important;
+    
+    /* 核心：开启滚动条 */
+    overflow-x: auto !important;
+    
+    margin: 0 !important;
+    padding: 15px 15px !important;
+    
+    /* 字体与排版 */
+    font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    line-height: 1.5;
+}
+
+/* 5. 滚动条美化 */
+.article-content .highlight pre::-webkit-scrollbar {
+    height: 8px;
+}
+.article-content .highlight pre::-webkit-scrollbar-thumb {
+    background-color: rgba(136, 136, 136, 0.3);
+    border-radius: 4px;
+}
+.article-content .highlight pre::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(136, 136, 136, 0.6);
+}
+```
+同时在 `config/_default/markup.toml` 文件后加入如下内容
+```toml
+[highlight]
+    codeFences = true
+    guessSyntax = true
+    lineNoStart = 1
+    
+    # 【核心修改】关闭行号，简化结构，确保滚动条百分百生效
+    lineNos = false
+    lineNumbersInTable = false
+    
+    # 保持 Dracula 配色
+    noClasses = true
+    style = "dracula"
+    
+    tabWidth = 4
+```
+
+## 6. 自动化部署 (GitHub Actions)
 
 为了实现 `git push` 后自动发布，我们需要配置 GitHub Actions。
 
-### 5.1 创建 Workflow
+### 6.1 创建 Workflow
 在根目录创建 `.github/workflows/deploy.yaml`。
 
-### 5.2 解决 Hugo 版本不兼容问题
+### 6.2 解决 Hugo 版本不兼容问题
 **报错现象**：
 `Deploy` 过程中出现 `function "hash" not defined` 错误，提示 `Module "hugo-theme-stack" is not compatible with this Hugo version`。
 
@@ -196,10 +279,10 @@ jobs:
         uses: actions/deploy-pages@v4
 ```
 
-### 5.3 开启 GitHub Pages
+### 6.3 开启 GitHub Pages
 最后，进入 GitHub 仓库设置 -> **Settings** -> **Pages**。
 将 **Source** 更改为 **GitHub Actions**。
 
-## 6. 总结
+## 7. 总结
 
 通过以上步骤，你现在应该已经拥有了一个在本地和云端都能完美运行的技术博客。感谢 Gemini 3 Pro！
