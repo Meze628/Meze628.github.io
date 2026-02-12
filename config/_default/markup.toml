@@ -20,11 +20,13 @@
     codeFences = true
     guessSyntax = true
     lineNoStart = 1
-    lineNos = true
-    lineNumbersInTable = true
     
+    # 【核心修改】关闭行号，简化结构，确保滚动条百分百生效
+    lineNos = false
+    lineNumbersInTable = false
+    
+    # 保持 Dracula 配色
     noClasses = true
-    
     style = "dracula"
     
     tabWidth = 4

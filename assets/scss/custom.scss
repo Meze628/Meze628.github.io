@@ -1,8 +1,8 @@
 /* ==========================================================================
-   Stack 主题代码块终极修复：macOS 红绿灯 + Dracula + 完美滚动条
+   最终方案：关闭行号版 (macOS Header + Dracula + 完美滚动)
    ========================================================================== */
 
-/* --- 1. 左下角暗黑模式切换图标修复 (保持不变) --- */
+/* 1. 修复左下角切换图标 (保持不动) */
 :root:not([data-scheme="dark"]) #dark-mode-toggle {
     svg:nth-of-type(1), .icon-tabler-toggle-left { display: inline-block !important; }
     svg:nth-of-type(2), .icon-tabler-toggle-right { display: none !important; }
@@ -12,122 +12,65 @@
     svg:nth-of-type(2), .icon-tabler-toggle-right { display: inline-block !important; }
 }
 
-/* --- 2. 代码块外层容器 (画框、圆角、背景) --- */
-.highlight {
-    /* 背景色：跟随主题 (白天/黑夜) */
+/* 2. 代码块外层容器 */
+.article-content .highlight {
+    /* 强制使用 Stack 主题的背景色 (覆盖 Dracula 的紫色) */
     background-color: var(--pre-background-color) !important;
     
-    /* 布局限制：防止撑破页面 */
-    width: 96% !important;
-    max-width: 96% !important;
-    margin: 20px auto !important;
-    
-    /* 外观装饰 */
+    /* 容器样式 */
     border-radius: 12px;
     box-shadow: var(--shadow-l1) !important;
+    margin: 20px auto !important;
+    width: 96% !important;
     
-    /* 关键：使用 Flex 布局来垂直排列“红绿灯头部”和“代码区域” */
-    display: flex !important;
-    flex-direction: column !important;
-    
-    /* 关键：隐藏溢出，确保圆角不被内部内容刺破 */
-    overflow: hidden !important; 
+    /* 关键：为顶部的红绿灯留出 32px 的空间 */
+    padding-top: 32px !important;
+    position: relative;
+    overflow: hidden; /* 防止圆角溢出 */
 }
 
-/* --- 3. macOS 红绿灯头部 (作为 Flex 的第一个子元素) --- */
-.article-content .highlight:before {
+/* 3. macOS 红绿灯头部 (绝对定位) */
+.article-content .highlight::before {
     content: '';
-    display: block;
-    /* 强制头部高度和宽度 */
-    height: 32px;
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    flex-shrink: 0; /* 禁止被压缩 */
+    height: 32px;
     
-    /* 图标样式 */
-    background: url(/code-header.svg) no-repeat;
-    background-size: 46px; 
-    background-position: 12px 10px; 
-    
-    /* 底部边框 */
+    /* 图标与底部分割线 */
+    background: url(/code-header.svg) no-repeat 12px 10px;
+    background-size: 46px;
+    background-color: inherit; /* 跟随父元素背景 */
     border-bottom: 1px solid var(--body-background);
+    z-index: 10;
 }
 
-/* --- 4. 代码滚动区域 (.chroma) --- */
-/* 这是代码块的直接父级 div，我们将滚动条加在这里 */
-.highlight > .chroma {
-    /* 关键：开启横向滚动 */
+/* 4. 代码滚动区域 (PRE 标签) */
+.article-content .highlight pre {
+    /* 核心：再次强制背景透明，确保万无一失 */
+    background-color: transparent !important;
+    background: transparent !important;
+    
+    /* 核心：开启滚动条 */
     overflow-x: auto !important;
     
-    /* 占满剩余空间 */
-    flex-grow: 1;
-    width: 100% !important;
     margin: 0 !important;
-    padding: 0 !important;
+    padding: 15px 15px !important;
     
-    /* 滚动条美化 (Firefox) */
-    scrollbar-width: thin;
-    scrollbar-color: rgba(136, 136, 136, 0.4) transparent;
+    /* 字体与排版 */
+    font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    line-height: 1.5;
 }
 
-/* 滚动条美化 (Chrome/Edge/Safari) */
-.highlight > .chroma::-webkit-scrollbar {
-    height: 8px; /* 稍微加高一点点，更易点击 */
+/* 5. 滚动条美化 */
+.article-content .highlight pre::-webkit-scrollbar {
+    height: 8px;
 }
-.highlight > .chroma::-webkit-scrollbar-track {
-    background: transparent;
-}
-.highlight > .chroma::-webkit-scrollbar-thumb {
+.article-content .highlight pre::-webkit-scrollbar-thumb {
     background-color: rgba(136, 136, 136, 0.3);
     border-radius: 4px;
 }
-.highlight > .chroma::-webkit-scrollbar-thumb:hover {
+.article-content .highlight pre::-webkit-scrollbar-thumb:hover {
     background-color: rgba(136, 136, 136, 0.6);
-}
-
-/* --- 5. 清除 Dracula 皮肤的背景色干扰 --- */
-.highlight .chroma,
-.highlight table, 
-.highlight pre, 
-.highlight code, 
-.highlight tbody, 
-.highlight tr, 
-.highlight td {
-    background-color: transparent !important;
-    border: none !important;
-}
-
-/* --- 6. 表格与内容微调 --- */
-.chroma .lntable {
-    /* 恢复表格默认行为，让它自然撑开宽度，从而触发外层 .chroma 的滚动 */
-    display: table !important;
-    width: auto !important; 
-    border-collapse: collapse !important;
-    margin: 0 !important;
-}
-
-/* 调整代码内容的内边距 */
-.highlight .lntd:last-child {
-    width: 100%;
-    vertical-align: top;
-}
-
-/* 调整代码文字内边距，使其不紧贴边缘 */
-.highlight pre {
-    padding: 10px 15px !important;
-    margin: 0 !important;
-    font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
-    /* 强制不换行，保证长代码会触发滚动条 */
-    white-space: pre !important; 
-}
-
-/* 行号区域样式 */
-.highlight .lntd:first-child pre {
-    padding-right: 10px !important; /* 行号和代码的间距 */
-    width: auto !important;
-}
-.highlight .lntd:first-child {
-    user-select: none;
-    opacity: 0.6;
-    border-right: 1px solid rgba(136, 136, 136, 0.1) !important;
-    vertical-align: top;
 }
