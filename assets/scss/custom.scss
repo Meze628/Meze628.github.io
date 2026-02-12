@@ -1,8 +1,8 @@
 /* ==========================================================================
-   自定义样式修复：macOS 风格 + Dracula 高亮 + 自动横向滚动条
+   Stack 主题代码块终极修复：macOS 红绿灯 + Dracula + 完美滚动条
    ========================================================================== */
 
-/* --- 1. 修复左下角主题切换图标 (保持不变) --- */
+/* --- 1. 左下角暗黑模式切换图标修复 (保持不变) --- */
 :root:not([data-scheme="dark"]) #dark-mode-toggle {
     svg:nth-of-type(1), .icon-tabler-toggle-left { display: inline-block !important; }
     svg:nth-of-type(2), .icon-tabler-toggle-right { display: none !important; }
@@ -12,96 +12,122 @@
     svg:nth-of-type(2), .icon-tabler-toggle-right { display: inline-block !important; }
 }
 
-/* --- 2. 代码块容器 (macOS 风格底板) --- */
+/* --- 2. 代码块外层容器 (画框、圆角、背景) --- */
 .highlight {
-    /* 【核心修复1】背景色 */
-    /* 强制使用 Stack 主题定义的背景色（白天米白/晚上深灰），覆盖 Dracula 的紫色 */
+    /* 背景色：跟随主题 (白天/黑夜) */
     background-color: var(--pre-background-color) !important;
     
-    padding: var(--card-padding);
-    position: relative;
+    /* 布局限制：防止撑破页面 */
+    width: 96% !important;
+    max-width: 96% !important;
+    margin: 20px auto !important;
+    
+    /* 外观装饰 */
     border-radius: 12px;
     box-shadow: var(--shadow-l1) !important;
     
-    /* 布局调整 */
-    width: 96% !important; 
-    margin: 20px auto !important; 
-    box-sizing: border-box; 
+    /* 关键：使用 Flex 布局来垂直排列“红绿灯头部”和“代码区域” */
+    display: flex !important;
+    flex-direction: column !important;
+    
+    /* 关键：隐藏溢出，确保圆角不被内部内容刺破 */
+    overflow: hidden !important; 
 }
 
-/* --- 3. 【关键】去除 Dracula 皮肤自带的背景色 --- */
-/* Dracula 会给内部标签加深紫色背景，必须全部设为透明，让第2步设置的底色透出来 */
-.highlight div,
-.highlight pre, 
-.highlight table, 
-.highlight tbody,
-.highlight tr, 
-.highlight td, 
-.highlight code {
-    background-color: transparent !important;
-    border: none !important;
-}
-
-/* --- 4. 【关键】横向滚动条修复 --- */
-/* 针对 Hugo 生成的代码行号表格结构 */
-.chroma .lntable {
-    display: block;       /* 表格默认不能滚动，必须强制改为 block */
+/* --- 3. macOS 红绿灯头部 (作为 Flex 的第一个子元素) --- */
+.article-content .highlight:before {
+    content: '';
+    display: block;
+    /* 强制头部高度和宽度 */
+    height: 32px;
     width: 100%;
-    overflow-x: auto;     /* 开启横向自动滚动 */
+    flex-shrink: 0; /* 禁止被压缩 */
+    
+    /* 图标样式 */
+    background: url(/code-header.svg) no-repeat;
+    background-size: 46px; 
+    background-position: 12px 10px; 
+    
+    /* 底部边框 */
+    border-bottom: 1px solid var(--body-background);
+}
+
+/* --- 4. 代码滚动区域 (.chroma) --- */
+/* 这是代码块的直接父级 div，我们将滚动条加在这里 */
+.highlight > .chroma {
+    /* 关键：开启横向滚动 */
+    overflow-x: auto !important;
+    
+    /* 占满剩余空间 */
+    flex-grow: 1;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
     
     /* 滚动条美化 (Firefox) */
-    scrollbar-width: thin; 
+    scrollbar-width: thin;
     scrollbar-color: rgba(136, 136, 136, 0.4) transparent;
 }
 
 /* 滚动条美化 (Chrome/Edge/Safari) */
-.chroma .lntable::-webkit-scrollbar {
-    height: 6px; /* 滚动条高度，细一点更精致 */
+.highlight > .chroma::-webkit-scrollbar {
+    height: 8px; /* 稍微加高一点点，更易点击 */
 }
-.chroma .lntable::-webkit-scrollbar-thumb {
-    background: rgba(136, 136, 136, 0.3); /* 滚动条颜色，半透明 */
+.highlight > .chroma::-webkit-scrollbar-track {
+    background: transparent;
+}
+.highlight > .chroma::-webkit-scrollbar-thumb {
+    background-color: rgba(136, 136, 136, 0.3);
     border-radius: 4px;
 }
-.chroma .lntable::-webkit-scrollbar-thumb:hover {
-    background: rgba(136, 136, 136, 0.6); /* 鼠标放上去变深 */
+.highlight > .chroma::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(136, 136, 136, 0.6);
 }
 
-/* --- 5. macOS 红绿灯头部 --- */
-.article-content .highlight:before {
-    content: '';
-    display: block;
-    /* 确保 static 目录下有这个 svg 文件 */
-    background: url(/code-header.svg); 
-    background-repeat: no-repeat;
-    background-size: 46px; 
-    background-position: 12px 10px; 
-    height: 32px; 
+/* --- 5. 清除 Dracula 皮肤的背景色干扰 --- */
+.highlight .chroma,
+.highlight table, 
+.highlight pre, 
+.highlight code, 
+.highlight tbody, 
+.highlight tr, 
+.highlight td {
+    background-color: transparent !important;
+    border: none !important;
+}
+
+/* --- 6. 表格与内容微调 --- */
+.chroma .lntable {
+    /* 恢复表格默认行为，让它自然撑开宽度，从而触发外层 .chroma 的滚动 */
+    display: table !important;
+    width: auto !important; 
+    border-collapse: collapse !important;
+    margin: 0 !important;
+}
+
+/* 调整代码内容的内边距 */
+.highlight .lntd:last-child {
     width: 100%;
-    /* 头部底部分割线 */
-    border-bottom: 1px solid var(--body-background); 
-    margin-bottom: 10px;
+    vertical-align: top;
 }
 
-/* --- 6. 字体与间距微调 --- */
-.article-content .highlight pre {
-    margin: 0;
-    padding: 0;
-    /* 推荐的编程字体栈 */
+/* 调整代码文字内边距，使其不紧贴边缘 */
+.highlight pre {
+    padding: 10px 15px !important;
+    margin: 0 !important;
     font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    /* 强制不换行，保证长代码会触发滚动条 */
+    white-space: pre !important; 
 }
 
-/* 行号单元格样式 */
-.chroma .lntd:first-child {
-    padding-right: 15px; 
-    user-select: none;   /* 禁止选中行号 */
-    opacity: 0.6;        /* 降低行号对比度 */
-    vertical-align: top;
-    width: 1%;           /* 紧缩行号宽度 */
-    white-space: nowrap;
+/* 行号区域样式 */
+.highlight .lntd:first-child pre {
+    padding-right: 10px !important; /* 行号和代码的间距 */
+    width: auto !important;
 }
-
-/* 代码内容单元格样式 */
-.chroma .lntd:last-child {
+.highlight .lntd:first-child {
+    user-select: none;
+    opacity: 0.6;
+    border-right: 1px solid rgba(136, 136, 136, 0.1) !important;
     vertical-align: top;
-    width: 100%;
 }
