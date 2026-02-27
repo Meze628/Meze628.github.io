@@ -12,7 +12,7 @@ tags:
 
 本文记录了我基于 **Hugo (Extended 版本)** 和 **Stack 主题** 搭建个人博客的全过程。几乎都是 Gemini 3 Pro 帮我完成的，包括这篇博客。
 
-## 1. 环境
+## 环境
 
 我的系统环境如下
 
@@ -25,9 +25,9 @@ tags:
     * 验证命令：`hugo version`
     * 输出示例：`hugo v0.155.0+extended windows/amd64`
 
-## 2. 初始化与主题安装
+## 初始化与主题安装
 
-### 2.1 创建仓库与站点
+### 创建仓库与站点
 在 GitHub 创建仓库 `username.github.io`，并在本地克隆：
 
 ```bash
@@ -37,14 +37,14 @@ cd username.github.io
 hugo new site . --force --format yaml
 ```
 
-### 2.2 安装 Stack 主题
+### 安装 Stack 主题
 推荐使用 Git Submodule 管理主题，便于后续更新：
 
 ```bash
 git submodule add https://github.com/CaiJimmy/hugo-theme-stack.git themes/hugo-theme-stack
 ```
 
-### 2.3 获取配置文件 (关键步骤)
+### 获取配置文件 (关键步骤)
 Stack 主题的配置较为复杂，直接手写容易出错。官方提供了一个 Starter 仓库，但为了保持目录整洁，我们采用“手动迁移”的方式。
 
 1.  下载 [hugo-theme-stack-starter](https://github.com/CaiJimmy/hugo-theme-stack-starter) 的 ZIP 包。
@@ -62,11 +62,11 @@ Stack 主题的配置较为复杂，直接手写容易出错。官方提供了�
     baseurl = "[https://你的用户名.github.io/](https://你的用户名.github.io/)"
     ```
 
-## 3. 本地化配置 (解决 TOML 报错)
+## 本地化配置 (解决 TOML 报错)
 
 默认配置为英文，我们需要将其转换为中文环境。
 
-### 3.1 基础参数
+### 基础参数
 修改 `config/_default/config.toml`：
 ```toml
 languageCode = "zh-cn"
@@ -74,7 +74,7 @@ defaultContentLanguage = "zh-cn"
 hasCJKLanguage = true  # 开启中文字数统计，否则阅读时间计算不准
 ```
 
-### 3.2 语言文件与菜单
+### 语言文件与菜单
 在修改 `config/_default/languages.toml` 时，我遇到了 `unmarshal failed: toml: incomplete number` 报错。这是因为在定义菜单 `weight` 时格式不完整。
 
 **正确的中文配置示例**：
@@ -107,11 +107,11 @@ hasCJKLanguage = true  # 开启中文字数统计，否则阅读时间计算不�
                 icon = "github"
 ```
 
-## 4. 图标系统与报错修复
+## 图标系统与报错修复
 
 Stack 主题的一大特点是**强依赖本地 SVG 图标**。如果在配置中引用了 `icon = "abc"`，但 `assets/icons/` 目录下没有 `abc.svg`，Hugo 会直接报错停止构建。
 
-### 4.1 解决 "icon not found" 错误
+### 解决 "icon not found" 错误
 **报错现象**：
 `ERROR Error: icon 'github.svg' is not found under 'assets/icons' folder`
 
@@ -120,7 +120,7 @@ Stack 主题的一大特点是**强依赖本地 SVG 图标**。如果在配置�
 2.  从 [Tabler Icons](https://tabler.io/icons) 下载所需图标的 SVG 文件。
 3.  **重命名**：下载的文件（如 `brand-github.svg`）必须重命名为配置文件中 `icon` 字段对应的值（如 `github.svg`）。
 
-### 4.2 修复夜间模式切换图标重叠
+### 修复夜间模式切换图标重叠
 原先黑白主题切换图标使用的勾选条，我替换了太阳和月亮。在 [Tabler Icons](https://tabler.io/icons) 搜索即可。并将它们改名为与原图标名字一样的名字，分别是 toggle-left 和 toggle-right。    
 在 `assets/scss/custom.scss` 文件中加入以下内容
 ```scss
@@ -138,7 +138,7 @@ Stack 主题的一大特点是**强依赖本地 SVG 图标**。如果在配置�
 }
 ```
 
-## 5. 美化代码块（Code Block）
+## 美化代码块（Code Block）
 在 `assets/scss/custom.scss` 文件中加入以下内容   
 ```scss
 /* 2. 代码块外层容器 */
@@ -222,14 +222,14 @@ Stack 主题的一大特点是**强依赖本地 SVG 图标**。如果在配置�
     tabWidth = 4
 ```
 
-## 6. 自动化部署 (GitHub Actions)
+## 自动化部署 (GitHub Actions)
 
 为了实现 `git push` 后自动发布，我们需要配置 GitHub Actions。
 
-### 6.1 创建 Workflow
+### 创建 Workflow
 在根目录创建 `.github/workflows/deploy.yaml`。
 
-### 6.2 解决 Hugo 版本不兼容问题
+### 解决 Hugo 版本不兼容问题
 **报错现象**：
 `Deploy` 过程中出现 `function "hash" not defined` 错误，提示 `Module "hugo-theme-stack" is not compatible with this Hugo version`。
 
@@ -279,10 +279,10 @@ jobs:
         uses: actions/deploy-pages@v4
 ```
 
-### 6.3 开启 GitHub Pages
+### 开启 GitHub Pages
 最后，进入 GitHub 仓库设置 -> **Settings** -> **Pages**。
 将 **Source** 更改为 **GitHub Actions**。
 
-## 7. 总结
+## 总结
 
 通过以上步骤，你现在应该已经拥有了一个在本地和云端都能完美运行的技术博客。感谢 Gemini 3 Pro！

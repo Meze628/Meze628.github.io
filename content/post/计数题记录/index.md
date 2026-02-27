@@ -13,7 +13,7 @@ tags:
 
 这几天琢磨其他东西，差点忘了自己还有省选没有参加（os：虽然参不参加都进不了队），但还是想认真对待一下这次省选，就认真做几道题目吧。
 
-# [P14636 [NOIP2025] 清仓甩卖](https://www.luogu.com.cn/problem/P14636)
+## [P14636 [NOIP2025] 清仓甩卖](https://www.luogu.com.cn/problem/P14636)
 **性质转化+计数**    
 **考虑什么时候不合法**，我们可以把 $w_i=2$ 的物品看作两个定价为 $1$，原价为 $\frac{a_i}{2}$ 的物品，只不过这两个物品必须捆绑购买，这样我们所有的物品的定价就是 $1$ 元，我们只需要买原价前 $m$ 大的物品即可（注意到 $\frac{a_i}{2}$ 就是这个原物品的性价比，因此小 R 的排序方式与此等同），问题就在如果第 $m$ 个物品与第 $m+1$ 个物品是必须捆绑购买的，小 R 会放弃第 $m$ 个物品，向后寻找一个不被捆绑的物品（不妨设其为第 $k$ 个物品，$k$ 可能不存在）进行购买，如果此时第 $m-1$ 个物品是不被捆绑的，且 $v_{m-1}+v_{k} < v_m+v_{m+1}$（这里用 $v_i$ 表示按如上情景下第 $i$ 件物品的原价），小 R 的选法就不是最优的，形式化的如下：
 
@@ -41,4 +41,54 @@ $$
 Ans=2^n-\sum_{(i,j,k)}\binom{i-2}{m-j-1}\cdot 2^{n-k+1}
 $$
 
-# [P10744 [SEERC 2020] Modulo Permutations](https://www.luogu.com.cn/problem/P10744)
+## [P10744 [SEERC 2020] Modulo Permutations](https://www.luogu.com.cn/problem/P10744)
+**挖掘性质+排列DP+DP优化**      
+首先注意到，当 $p_i<p_{i+1}$ 时，$p_i \mod p_{i+1}=p_{i+1}$，因此当 $p_i>2$ 时，接在它后面的数必须比它小，因此不难发现，合法的排列由两个结尾分别是 $1$ 和 $2$ 的递降的链构成。考虑 DP,考虑从大往小填充数字，令 $dp_{i,j}$ 表示以 $i$ 和 $j$ 结尾时的方案数，其中 $i<j$。则有如下 $O(n^2)$ 的转移，初始 $dp_{n-1,n}=1$。
+$$
+\left \{ \begin{matrix}
+ dp_{i-1,i} \gets dp_{i,j},j \mod (i-1) \le 2\\ 
+dp_{i-1,j} \gets dp_{i,j}
+\end{matrix}\right.
+$$
+考虑优化 DP，注意到方程第二维只从原先更高的转移过来，因此我们把第二维单独摘出来，令 $dp_i$ 表示两个链的结尾最大是 $i$，从刚刚我所说的能看出来它的转移具有单调性。有如下方程
+$$
+dp_i=1+\sum_{j \in [i+1,n],j \mod (i-1)\le 2} dp_j
+$$
+这里有一个 $+1$，意思是还有一个方案没有被考虑，两个链分别是
+```
+n,n-1,n-2,...,i+1
+
+i
+```
+我们找这个 $j$ 的复杂度是 $O(\frac{n}{i})$，从如下数字中找
+- $((i-1)+0) \cdot k$
+- $((i-1)+1) \cdot k$
+- $((i-1)+2) \cdot k$
+这样总的复杂度就是调和级数，$O(n \ln n)$。因为是一个环，最后的答案就是 $ndp_2$。优化部分不是很好想，给出核心代码加以理解。
+```cpp
+for (int m = n - 1; m >= 1; --m) {
+    long long cur_sum = 1; 
+
+    if (m >= 3) {
+        for (int k = 1; k * m <= n; ++k) {
+            int base = k * m;
+            
+            // j 必须大于 m + 1
+            if (base > m + 1) cur_sum =(cur_sum + f[base]) % MOD;
+            if (base + 1 <= n && base + 1 >m + 1) cur_sum = (cur_sum + [base + 1]) % MOD;
+            if (base + 2 <= n && base + 2 >m + 1) cur_sum = (cur_sum + [base + 2]) % MOD;
+        }
+    } 
+
+    else {
+        // 当 m = 1 或 2 时，任何数 mod 它必然 <= 2，直接累加所有有效的 j
+        for (int j = m + 2; j <= n; ++j) {
+            cur_sum = (cur_sum + f[j]) %MOD;
+        }
+    }
+
+    f[m + 1] = cur_sum;
+}
+```
+
+## [P10741 [SEERC 2020] Fence Job](https://www.luogu.com.cn/problem/P10741)
