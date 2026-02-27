@@ -19,7 +19,7 @@ SortBy              = "default"
 
 [sidebar]
     emoji    = "💻"
-    subtitle = "OIer and CTFer"
+    subtitle = "OIer"
     avatar   = "img/avatar.png"
 
 [article]
