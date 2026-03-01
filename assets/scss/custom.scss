@@ -14,8 +14,11 @@
 
 /* 2. 代码块外层容器 */
 .article-content .highlight {
-    /* 强制使用 Stack 主题的背景色 (覆盖 Dracula 的紫色) */
-    background-color: var(--pre-background-color) !important;
+    /* 固定使用深色背景色 (Dracula 的背景色 #282a36) */
+    background-color: #282a36 !important;
+    
+    /* 强制让未被高亮插件捕获的普通纯文本也显示为浅色 */
+    color: #f8f8f2 !important;
     
     /* 容器样式 */
     border-radius: 12px;
@@ -42,7 +45,9 @@
     background: url(/code-header.svg) no-repeat 12px 10px;
     background-size: 46px;
     background-color: inherit; /* 跟随父元素背景 */
-    border-bottom: 1px solid var(--body-background);
+    
+    /* 将原本的 var(--body-background) 改为半透明白色，防止亮色模式下出现突兀的浅色底边框 */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     z-index: 10;
 }
 
