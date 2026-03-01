@@ -106,7 +106,7 @@ $$
 
 ## [AT_dp_t Permutation](https://atcoder.jp/contests/dp/tasks/dp_t)
 
-**排列+DP+插入法技巧**
+**排列计数DP+插入法技巧**     
 因为给了相邻两项的大小关系，没有具体数值的要求，所以考虑插入法（[https://www.luogu.com.cn/article/xt2szowt](https://www.luogu.com.cn/article/xt2szowt)），就是对待填入数字在已知排列中的排名进行 DP，设 $dp_{i,j}$ 表示考虑到第 $i$ 个位置，第个位置上的数在前 $i$ 个数当中排名为 $j$。有如下转移
 $$
 \operatorname{if} s_i='<' \ , \ dp_{i,j}=\sum_{k=1}^{j-1} dp_{i-1,k}
@@ -118,4 +118,16 @@ $$
 关于初始化，$dp_{1,1}=1$，这是因为我们只考虑相对大小，不对该位置上的具体数值进行讨论，因此只有一种情况，对方程进行一下前缀和优化就能做到 $O(n^2)$。
 
 ## [[ABC282G] Similar Permutation](https://atcoder.jp/contests/abc282/tasks/abc282_g)
+
+**排列计数DP+插入法技巧**     
+这道题下相当于上一道的二维的加强版，令 $dp_{i,j,k,p}$ 表示处理到第 $i$ 个元素中，$A_i$ 排名为 $j$，$B_i$ 排名为 $k$，有 $p$ 处满足限制。初始时 $dp_{1,1,1,0}=1$，有 $O(n^5k)$ 转移。
+$$
+dp_{i,j,k,p} =\sum_{x=1}^{j-1} \sum_{y=1}^{k-1} dp_{i-1,x,y,p-1}+\sum_{x=j}^{i-1} \sum_{y=k}^{i-1} dp_{i-1,x,y,p-1}+\sum_{x=1}^{j-1} \sum_{y=k}^{i-1} dp_{i-1,x,y,p}+\sum_{x=j}^{i-1} \sum_{y=1}^{k-1} dp_{i-1,x,y,p}
+$$
+这里用二维前缀和即可做到 $O(n^3k)$。
+$$
+sum_{i,j,k,p}=\sum_{x=1}^{j} \sum_{y=1}^{k} dp_{i,x,y,p}
+$$
+
+## [P14568 【MX-S12-T3】排列](https://www.luogu.com.cn/problem/P14568)
 
