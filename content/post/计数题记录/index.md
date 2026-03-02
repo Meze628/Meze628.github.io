@@ -213,3 +213,83 @@ $$
 Ans=\sum_{i=1}^{n} dp_{n,i,\frac{sum}{2}} \cdot i! \cdot (n-i)!
 $$
 注意当 $\frac{sum}{2}$ 为奇数时无解。时间复杂度在 $O(n^2 \cdot \sum w_i)$。
+
+## [P14364 [CSP-S 2025] 员工招聘](https://www.luogu.com.cn/problem/P14364)
+在这里给出两种方法       
+
+### 贡献延后计算 DP
+
+贡献延后计算是一个常见的 trick，设 $dp_{i,j,k}$ 表示处理到第 $i$ 天，有 $j$ 个人不通过，⌈钦定⌋ 了 $k$ 个满足 $c \le j$ 的位置，此时的方案数。这个状态可能比较难以理解，我们只考虑钦定的这 $k$ 个位置造成的方案数，不考虑剩下 $i-k$ 个位置的具体内容。我们规定 $cnt_j$ 表示 $c=j$ 的人数，$sum_j$ 表是 $c \le j$ 的人数，我们考虑向后转移     
+
+如果 $s_{i+1}=1$，选择 $c>j$ 的人可以通过面试，有如下转移
+
+$$
+dp_{i+1,j,k} \gets dp_{i,j,k}
+$$
+
+选择 $c \le j$ 的则不会通过，考虑怎么转移，此时有 $j+1$ 个人不能通过，枚举前 $i$ 个人当中有 $p$ 个 $c=j+1$，新状态就是 $dp_{i+1,j+1,k+1+p}$.我们需要在原来 $i-k$ 个位置中选出 $p$ 个位置来放置这 $p$ 个 $c=j+1$，即 $\binom{i-k}{p}$，还要从那些 $c=j+1$ 的人当中选出 $p$ 个来填充这些位置，这 $p$ 个人也可以随意排列，方案数是 $\binom{cnt_{j+1}}{p}p!$，再从所有未被钦定的 $c \le j$ 的当中选一个，即 $\binom{sum_j-k}{1}=(sum_{j}-k)$。有如下转移：
+
+$$
+dp_{i+1,j+1,k+1+p} \gets \binom{i-k}{p}\binom{cnt_{j+1}}{p}p!(sum_j-k)dp_{i,j,k}
+$$
+
+如果 $s_{i+1}=0$，按照上面的情况讨论即可，如果选择 $c>j+1$，有如下转移：
+
+$$
+dp_{i+1,j+1,k+p} \gets \binom{i-k}{p} \binom{cnt_{j+1}}{p}p!dp_{i,j,k}
+$$
+
+若选择 $c \le j+1$，有如下转移：
+
+$$
+dp_{i+1,j+1,k+p+1} \gets \binom{i-k}{p} \binom{cnt_{j+1}}{p}p!(sum_{j+1}-p-k)dp_{i,j,k}
+$$
+
+最终答案就是枚举不通过人数到 $n-m$。
+
+$$
+Ans=\sum_{i=1}^{n-m} dp_{n,i,sum_i}(n-sum_{i})!
+$$
+
+如果难以理解可以看代码
+
+```cpp
+newdp[0][0]=1;
+for(int i=0;i<n;i++){
+	memcpy(olddp,newdp,sizeof(newdp));
+	memset(newdp,0,sizeof(newdp));
+	for(int j=0;j<=i;j++)
+		for(int k=0;k<=min(sum[j],i);k++){
+			if(!olddp[j][k]) continue;
+
+			if(s[i+1]=='1'){
+				(newdp[j][k] += olddp[j][k]) %= Mod;
+				for(int p=0;p<=min(i-k,cnt[j+1]);p++)
+					(newdp[j+1][k+p+1] += C[i-k][p]*C[cnt[j+1]][p]%Mod*jc[p]%Mod*(sum[j]-k)%Mod*olddp[j][k]) %= Mod;
+			}
+			else{
+				for(int p=0;p<=min(i-k,cnt[j+1]);p++){
+					//<=j+1
+					(newdp[j+1][k+p+1] += C[i-k][p]*C[cnt[j+1]][p]%Mod*jc[p]%Mod*olddp[j][k]%Mod*(sum[j+1]-p-k)) %= Mod;
+					//>j+1
+					(newdp[j+1][k+p] += C[i-k][p]*C[cnt[j+1]][p]%Mod*jc[p]%Mod*olddp[j][k]) %= Mod;
+				}
+			}
+		}
+}
+
+long long ans=0;
+for(int i=0;i<=n-m;i++)
+	(ans += newdp[i][sum[i]]*jc[n-sum[i]]) %= Mod;
+```
+
+
+> 这篇题解如何体现 ⌈贡献延后计算⌋？（Gemini 3.1 Pro 总结）
+传统的排列 DP 是“走到哪，填到哪，算到哪”。但在本题中：
+> 1. **只占坑，不结账（延后）**： 当某天面试难度低（$s=1$）时且选择了能够通过的人，我们不急着决定今天具体录用谁，而是把这一天当成一个“空白名额”积攒下来，此时方案数直接继承（即不乘任何组合数，延后贡献计算）。
+> 2. **触碰底线，集中清算（兑现）**： 当不通过人数增加（$j \gets j+1$）时，那些忍耐度为 $c=j+1$ 的人到了必须被安排的生死线。此时我们才回溯，从之前积攒的“空白名额”中抽出几个，把这批人填进去。这时才一次性乘上对应的组合数与排列数，完成历史贡献的集中清算。
+>
+> 这就是贡献延后计算：先把空位留着，等特定元素的限制条件被触发时，再统一计算它们填入空位的排列方案。
+
+
+### 
