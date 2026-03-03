@@ -1,5 +1,5 @@
 # 1. 【必改】修改为你的 GitHub Pages 网址
-baseurl      = "https://Meze628.github.io/"
+baseurl      = "https://meze0.top"
 
 # 2. 【必改】指定本地主题 (原文件缺了这行，导致无法找到主题)
 theme        = "hugo-theme-stack"
