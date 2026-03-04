@@ -2,7 +2,7 @@
 title: "模板复习"
 description: "模板复习"
 date: 2026-03-03T17:06:21+08:00
-image: cover.jpg
+image: cover.png
 math: true
 categories:
     - OI与数学
@@ -11,7 +11,7 @@ categories:
 
 ## 图论
 
-### 最短路
+### 单源最短路
 
 #### dijkstra
 
@@ -167,15 +167,84 @@ int main(){
     return 0;
 }
 ```
+
+#### prim
+
+```cpp
+```
+
 ### 强连通分量
+
+[[图论与代数结构 701] 强连通分量](https://www.luogu.com.cn/problem/B3609)
 
 #### tarjan
 
 ```cpp
+#include<bits/stdc++.h>
+using namespace std;
 
+typedef long long ll;
+const int N=1e4+5;
+ll n,m,cnt,sc;
+vector<ll> g[N],ans[N];
+ll dfn[N],ins[N],low[N],scc[N],vis[N];
+stack<ll> s;
+
+void tarjan(ll u){
+    dfn[u]=low[u]=++cnt;
+    s.push(u);
+    ins[u]=1;
+    for (ll v:g[u]){
+        if (!dfn[v]){
+            tarjan(v);
+            low[u]=min(low[u],low[v]);
+        }
+        else if (ins[v]) low[u]=min(low[u],dfn[v]);
+    }
+    if (dfn[u]==low[u]){
+        sc++;
+        while (s.top()!=u){
+            ll v=s.top();
+            s.pop();
+            scc[v]=sc;
+            ins[v]=0;
+        }
+        scc[u]=sc;
+        ins[u]=0;
+        s.pop();
+    }
+}
+
+int main(){
+    scanf("%lld%lld",&n,&m);
+    for (int i=1;i<=m;i++){
+        ll u,v;
+        scanf("%lld%lld",&u,&v);
+        g[u].push_back(v);
+    }
+    for (int i=1;i<=n;i++){
+        if (!dfn[i]) tarjan(i);
+    }
+    printf("%lld\n",sc);
+    for (int i=1;i<=n;i++) ans[scc[i]].push_back(i);
+    for (int i=1;i<=n;i++){
+        if (vis[scc[i]]) continue;
+        vis[scc[i]]=1;
+        for (ll res:ans[scc[i]]) printf("%lld ",res);
+        putchar('\n');
+    }
+    return 0;
+}
 ```
 
 ### 网络流
+
+[【模板】网络最大流](https://www.luogu.com.cn/problem/P3376)
+
+#### 网络最大流（EK）
+
+#### 网络最大流（Dinic）
+
 
 ## 数据结构
 
