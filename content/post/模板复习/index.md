@@ -129,6 +129,54 @@ int main(){
 
 #### Kruskal
 
+```cpp
+#include<bits/stdc++.h>
+using namespace std;
+
+typedef long long ll;
+const int M=2e5+5;
+ll n,m,p[M],ans,cnt;
+struct Edge{
+    ll u,v,w;
+    bool operator<(const Edge &b) const {
+        return w<b.w;
+    }
+}g[M];
+
+ll find(ll x){
+    if (p[x]!=x) p[x]=find(p[x]);
+    return p[x];
+}
+
+int main(){
+    scanf("%lld%lld",&n,&m);
+    for (int i=1;i<=m;i++){
+        ll u,v,w;
+        scanf("%lld%lld%lld",&u,&v,&w);
+        g[i]=(Edge){u,v,w};
+    }
+    for (int i=1;i<=n;i++) p[i]=i;
+    sort(g+1,g+1+m);
+    for (int i=1;i<=m;i++){
+        ll u=g[i].u,v=g[i].v,w=g[i].w;
+        ll x=find(u),y=find(v);
+        if (x!=y) p[x]=y,ans+=w,cnt++;
+    }
+    if (cnt==n-1) printf("%lld\n",ans);
+    else printf("orz");
+    return 0;
+}
+```
+### 强连通分量
+
+#### tarjan
+
+```cpp
+
+```
+
+### 网络流
+
 ## 数据结构
 
 ### 并查集
