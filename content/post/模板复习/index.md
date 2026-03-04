@@ -243,8 +243,144 @@ int main(){
 
 #### 网络最大流（EK）
 
-#### 网络最大流（Dinic）
+```cpp
+#include<bits/stdc++.h>
+using namespace std;
 
+typedef long long ll;
+const int N=2e2+5;
+const int M=5e3+5;
+ll n,m,s,t,ans;
+ll tot=1,h[N],dis[N],pre[N],vis[N];
+struct node{
+    ll v,w;
+    ll nxt;
+}e[M<<1];
+
+void add(ll u,ll v,ll w){
+    e[++tot]=(node){v,w,h[u]};
+    h[u]=tot;
+}
+
+bool bfs(){
+    memset(vis,0,sizeof vis);
+    queue<ll> q;
+    q.push(s);
+    vis[s]=1;
+    dis[s]=1e14;
+    while (!q.empty()){
+        ll u=q.front();
+        q.pop();
+        for (int i=h[u];i;i=e[i].nxt){
+            ll v=e[i].v,w=e[i].w;
+            if (vis[v]) continue;
+            if (!w) continue;
+            vis[v]=1;
+            dis[v]=min(dis[u],w);
+            pre[v]=i;
+            q.push(v);
+            if (v==t) return true;
+        }
+    }
+    return false;
+}
+
+void update(){
+    ll u=t;
+    while (u!=s){
+        ll v=pre[u];
+        e[v].w-=dis[t];
+        e[v^1].w+=dis[t];
+        u=e[v^1].v;
+    }
+    ans+=dis[t];
+}
+
+int main(){
+    scanf("%lld%lld%lld%lld",&n,&m,&s,&t);
+    for (int i=1;i<=m;i++){
+        ll u,v,w;
+        scanf("%lld%lld%lld",&u,&v,&w);
+        add(u,v,w);
+        add(v,u,0);
+    }
+    while (bfs()) update();
+    printf("%lld\n",ans);
+    return 0;
+}
+```
+
+#### 网络最大流（Dinic+当前弧优化）
+
+```cpp
+#include<bits/stdc++.h>
+using namespace std;
+
+typedef long long ll;
+const int N=2e2+5;
+const int M=5e3+5;
+const ll INF=1e14;
+ll n,m,s,t,ans;
+ll tot=1,h[N],dis[N],cur[N];
+struct node{
+    ll v,w;
+    ll nxt;
+}e[M<<1];
+
+void add(ll u,ll v,ll w){
+    e[++tot]=(node){v,w,h[u]};
+    h[u]=tot;
+}
+
+bool bfs(){
+    for (int i=1;i<=n;i++) dis[i]=INF,cur[i]=h[i];
+    queue<ll> q;
+    q.push(s);
+    dis[s]=0;
+    while (!q.empty()){
+        ll u=q.front();
+        q.pop();
+        for (int i=h[u];i;i=e[i].nxt){
+            ll v=e[i].v,w=e[i].w;
+            if (w&&dis[v]==INF){
+                q.push(v);
+                dis[v]=dis[u]+1;
+            }
+        }
+    }
+    return dis[t]!=INF;
+}
+
+ll dfs(ll u,ll sum){
+    if (u==t) return sum;
+    ll res=0;
+    for (ll &i=cur[u];i&&sum;i=e[i].nxt){
+        ll v=e[i].v,w=e[i].w;
+        if (w&&dis[v]==dis[u]+1){
+            ll k=dfs(v,min(sum,w));
+            if (!k) dis[v]=INF;
+            e[i].w-=k;
+            e[i^1].w+=k;
+            res+=k;
+            sum-=k;
+        }
+    }
+    return res;
+}
+
+int main(){
+    scanf("%lld%lld%lld%lld",&n,&m,&s,&t);
+    for (int i=1;i<=m;i++){
+        ll u,v,w;
+        scanf("%lld%lld%lld",&u,&v,&w);
+        add(u,v,w);
+        add(v,u,0);
+    }
+    while (bfs()) ans+=dfs(s,INF);
+    printf("%lld\n",ans);
+    return 0;
+}
+```
 
 ## 数据结构
 
