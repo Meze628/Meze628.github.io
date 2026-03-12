@@ -2,7 +2,7 @@
 title: "关于省选和以后"
 description: "关于省选和以后"
 date: 2026-03-11T20:31:13+08:00
-image: cover.jpg
+image: cover.jpeg
 math: true
 categories:
     - 记录
