@@ -5,8 +5,7 @@ date: 2026-02-13T13:20:00+08:00
 image: cover.jpg
 math: true
 categories:
-    - OI与数学
-    - 笔记
+    - 笔记（OI 与数学）
 tags:
     - 组合数学
 ---

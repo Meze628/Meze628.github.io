@@ -4,7 +4,7 @@ description: "一篇详细的技术复盘，记录如何在 Windows 环境下配
 date: 2026-02-12T17:00:00+08:00
 image: cover.jpg
 categories:
-    - 记录
+    - 记录（其他杂项）
 tags:
     - Hugo
     - 博客搭建

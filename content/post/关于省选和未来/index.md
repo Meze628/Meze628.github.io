@@ -5,7 +5,7 @@ date: 2026-03-11T20:31:13+08:00
 image: cover.jpeg
 math: true
 categories:
-    - 记录
+    - 记录（OI 与数学）
 tags:
     - 
 ---
